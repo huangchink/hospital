@@ -33,3 +33,15 @@ python VA_GUI_two_tk_cpd.py
 
 python VF_GUI_v2.py
 ```
+
+### citation
+@article{zhu2025gazefollower,
+  title={GazeFollower: An open-source system for deep learning-based gaze tracking with web cameras},
+  author={Zhu, Gancheng and Duan, Xiaoting and Huang, Zehao and Wang, Rong and Zhang, Shuai and Wang, Zhiguo},
+  journal={Proceedings of the ACM on Computer Graphics and Interactive Techniques},
+  volume={8},
+  number={2},
+  pages={1--18},
+  year={2025},
+  publisher={ACM New York, NY}
+}
