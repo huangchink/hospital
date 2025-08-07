@@ -1,0 +1,8 @@
+19-May-25 14:48:50.121 - INFO - WebCam opened
+19-May-25 14:48:52.527 - INFO - WebCam closed
+19-May-25 14:48:52.556 - INFO - WebCam opened
+19-May-25 14:48:54.240 - ERROR - No calibration model is available, please perform calibration
+19-May-25 14:48:54.242 - ERROR - No calibration model is available, please perform calibration
+19-May-25 14:49:21.118 - INFO - WebCam closed
+19-May-25 14:49:21.130 - INFO - save data to data\svop_demo.csv
+19-May-25 14:49:21.130 - INFO - WebCam closed

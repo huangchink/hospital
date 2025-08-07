@@ -1,0 +1,9 @@
+09-Jun-25 13:43:41.467 - INFO - WebCam opened
+09-Jun-25 13:43:44.574 - INFO - WebCam closed
+09-Jun-25 13:43:45.330 - INFO - WebCam opened
+09-Jun-25 13:44:07.478 - INFO - calibrating shutdowns
+09-Jun-25 13:44:08.357 - INFO - WebCam closed
+09-Jun-25 13:44:08.385 - INFO - WebCam opened
+09-Jun-25 13:44:24.379 - INFO - WebCam closed
+09-Jun-25 13:44:24.400 - INFO - save data to data\svop_demo.csv
+09-Jun-25 13:44:24.400 - INFO - WebCam closed

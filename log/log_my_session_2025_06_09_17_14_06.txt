@@ -1,0 +1,2 @@
+09-Jun-25 17:14:06.986 - INFO - WebCam opened
+09-Jun-25 17:14:09.932 - INFO - WebCam closed

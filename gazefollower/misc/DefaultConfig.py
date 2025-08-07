@@ -34,7 +34,7 @@ class DefaultConfig:
 
         self.model_fit_instruction = "Calibration model is fitting.\nPlease wait."
         self.eye_blink_threshold = 10
-        self.cali_mode = 13
+        self.cali_mode = 5
 
         self._monitors = get_monitors()
         self.screen_size = np.array([self._monitors[0].width, self._monitors[0].height])

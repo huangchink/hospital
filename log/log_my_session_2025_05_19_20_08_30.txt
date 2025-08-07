@@ -1,0 +1,10 @@
+19-May-25 20:08:30.068 - INFO - WebCam opened
+19-May-25 20:08:32.192 - INFO - WebCam closed
+19-May-25 20:08:32.698 - INFO - WebCam opened
+19-May-25 20:08:53.905 - INFO - calibrating shutdowns
+19-May-25 20:08:54.642 - INFO - WebCam closed
+19-May-25 20:08:54.655 - INFO - WebCam opened
+19-May-25 20:09:03.979 - ERROR - 'NoneType' object is not subscriptable
+19-May-25 20:10:35.375 - INFO - WebCam closed
+19-May-25 20:10:35.392 - INFO - save data to data\svop_demo.csv
+19-May-25 20:10:35.392 - INFO - WebCam closed

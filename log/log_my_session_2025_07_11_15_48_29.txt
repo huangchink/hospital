@@ -1,0 +1,9 @@
+11-Jul-25 15:48:29.456 - INFO - WebCam opened
+11-Jul-25 15:48:34.620 - INFO - WebCam closed
+11-Jul-25 15:48:34.845 - INFO - WebCam opened
+11-Jul-25 15:48:55.917 - INFO - calibrating shutdowns
+11-Jul-25 15:48:56.671 - INFO - WebCam closed
+11-Jul-25 15:48:56.689 - INFO - WebCam opened
+11-Jul-25 15:49:23.915 - INFO - WebCam closed
+11-Jul-25 15:49:23.954 - INFO - save data to VA_raw.csv
+11-Jul-25 15:49:23.955 - INFO - WebCam closed

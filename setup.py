@@ -28,6 +28,9 @@ build_number = get_build_number()
 from gazefollower import version
 
 major_version, minor_version, patch_version = version.__version__.split(".")
+with open('README.md', 'r', encoding='utf-8') as f:
+    long_desc = f.read()
+
 
 setup(
     name=package_name,
@@ -37,7 +40,7 @@ setup(
     description=version.__description__,
     url=version.__url__,
     packages=find_packages(),
-    long_description=open('README.md').read(),  # 或者使用其他文档文件
+    long_description=long_desc,
     long_description_content_type='text/markdown',  # 如果使用 Markdown 格式
     package_data={
         package_name: ['res/audio/*', 'res/image/*', 'res/model_weights/*'],

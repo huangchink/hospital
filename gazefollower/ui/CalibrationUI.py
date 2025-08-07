@@ -119,23 +119,29 @@ class CalibrationUI(BaseUI):
         self.running = True
 
     def draw(self, cali_controller: CalibrationController):
-        last_x, last_y = -1, -1
-        while cali_controller.calibrating:
-            # listen event
-            self.backend.listen_event(self, skip_event=True)
-            # for pygame
-            self.backend.before_draw()
-            # draw dot
-            cali_img_size = self.config.cali_target_size
-            target_x = int(np.round(cali_controller.x * self.backend.get_screen_size()[0]))
-            target_y = int(np.round(cali_controller.y * self.backend.get_screen_size()[1]))
-            draw_rect = (target_x - cali_img_size[0] // 2, target_y - cali_img_size[1] // 2,
-                         cali_img_size[0], cali_img_size[1])
-            if target_x != last_x or target_y != last_y:
-                self.backend.play_sound(self._sound_id)
-                last_x, last_y = target_x, target_y
-            self.backend.draw_image(self.config.cali_target_img, draw_rect)
-            self.backend.draw_text(str(cali_controller.progress), self.font_name, self.row_font_size, self._color_white,
-                                   draw_rect)
-            # flip the screen
-            self.backend.after_draw()
+        import logging
+
+        try:
+
+            last_x, last_y = -1, -1
+            while cali_controller.calibrating:
+                # listen event
+                self.backend.listen_event(self, skip_event=True)
+                # for pygame
+                self.backend.before_draw()
+                # draw dot
+                cali_img_size = self.config.cali_target_size
+                target_x = int(np.round(cali_controller.x * self.backend.get_screen_size()[0]))
+                target_y = int(np.round(cali_controller.y * self.backend.get_screen_size()[1]))
+                draw_rect = (target_x - cali_img_size[0] // 2, target_y - cali_img_size[1] // 2,
+                            cali_img_size[0], cali_img_size[1])
+                if target_x != last_x or target_y != last_y:
+                    self.backend.play_sound(self._sound_id)
+                    last_x, last_y = target_x, target_y
+                self.backend.draw_image(self.config.cali_target_img, draw_rect)
+                self.backend.draw_text(str(cali_controller.progress), self.font_name, self.row_font_size, self._color_white,
+                                    draw_rect)
+                # flip the screen
+                self.backend.after_draw()
+        except Exception:
+            logging.exception("Error drawing calibration result / collecting user response")

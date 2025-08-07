@@ -1,0 +1,9 @@
+19-May-25 13:16:06.721 - INFO - WebCam opened
+19-May-25 13:16:09.168 - INFO - WebCam closed
+19-May-25 13:16:19.692 - INFO - WebCam opened
+19-May-25 13:17:09.079 - INFO - calibrating shutdowns
+19-May-25 13:17:10.468 - INFO - WebCam closed
+19-May-25 13:17:10.497 - INFO - WebCam opened
+19-May-25 13:17:32.158 - INFO - WebCam closed
+19-May-25 13:17:32.201 - INFO - save data to ./data\free_viewing_pygame_demo.csv
+19-May-25 13:17:32.201 - INFO - WebCam closed

@@ -1,0 +1,2 @@
+19-May-25 19:07:06.230 - INFO - WebCam opened
+19-May-25 19:07:09.712 - INFO - WebCam closed

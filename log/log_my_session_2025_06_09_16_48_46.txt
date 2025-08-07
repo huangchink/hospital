@@ -1,0 +1,4 @@
+09-Jun-25 16:48:46.769 - INFO - WebCam opened
+09-Jun-25 16:48:49.564 - INFO - WebCam closed
+09-Jun-25 16:48:49.646 - INFO - WebCam opened
+09-Jun-25 16:49:10.936 - ERROR - name 'logging' is not defined

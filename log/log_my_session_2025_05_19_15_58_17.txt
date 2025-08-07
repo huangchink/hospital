@@ -1,0 +1,9 @@
+19-May-25 15:58:17.269 - INFO - WebCam opened
+19-May-25 15:58:19.940 - INFO - WebCam closed
+19-May-25 15:58:21.217 - INFO - WebCam opened
+19-May-25 15:59:10.463 - INFO - calibrating shutdowns
+19-May-25 15:59:10.820 - INFO - WebCam closed
+19-May-25 15:59:10.852 - INFO - WebCam opened
+19-May-25 16:00:31.527 - INFO - WebCam closed
+19-May-25 16:00:31.569 - INFO - save data to data\svop_demo.csv
+19-May-25 16:00:31.570 - INFO - WebCam closed

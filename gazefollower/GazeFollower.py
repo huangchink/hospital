@@ -6,6 +6,7 @@ import pathlib
 import re
 import shutil
 import threading
+import logging
 
 import cv2
 import numpy as np
@@ -201,6 +202,7 @@ class GazeFollower:
             win (None|pygame.Surface|psychopy.visual.Window): The pygame window or psychopy window.
                 If you pass None, the default pygame window will be used.
         """
+        import logging
 
         if win is None:
             pygame.init()
@@ -214,14 +216,19 @@ class GazeFollower:
         while 1:
             # new session
             self._new_calibration_session()
+
             self._calibration_controller.new_session()
             self.calibration_ui.new_session()
             # draw guidance
             self.calibration_ui.draw_guidance(self.config.cali_instruction)
             # start calibration
+
             self.camera.start_calibrating()
             # draw calibration points
             self.calibration_ui.draw(self._calibration_controller)
+
+            print('1')
+
             user_response = self.calibration_ui.draw_cali_result(self._calibration_controller,
                                                                  self.config.model_fit_instruction)
             self.camera.stop_calibrating()
@@ -280,103 +287,79 @@ class GazeFollower:
         self.gaze_feature_collection = np.array(self.gaze_feature_collection)[mask]
         self.ground_truth_points = np.array(self.ground_truth_points)[mask]
         self.point_id_collection = point_ids[mask]
-
     def process_frame(self, state, timestamp, frame):
-        """
-        Processes the received frame.
+        try:
+            if state == CameraRunningState.PREVIEWING:
+                face_info = self.face_alignment.detect(timestamp, frame)
+                face_patch = left_eye_patch = right_eye_patch = None
+                if face_info.status and face_info.can_gaze_estimation:
+                    face_patch = clip_patch(frame, face_info.face_rect)
+                    left_eye_patch = clip_patch(frame, face_info.left_rect)
+                    right_eye_patch = clip_patch(frame, face_info.right_rect)
+                    x,y,w,h = face_info.left_rect
+                    cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2)
+                    x,y,w,h = face_info.right_rect
+                    cv2.rectangle(frame,(x,y),(x+w,y+h),(0,0,255),2)
+                    fx,fy,fw,fh = face_info.face_rect
+                    lx,ly,lw,lh = face_info.left_rect
+                    rx,ry,rw,rh = face_info.right_rect
+                    rx_rel, ry_rel = rx-fx, ry-fy
+                    cv2.rectangle(face_patch,(lx-fx,ly-fy),(lx-fx+lw,ly-fy+lh),(255,0,0),2)
+                    cv2.rectangle(face_patch,(rx_rel,ry_rel),(rx_rel+rw,ry_rel+rh),(0,0,255),2)
+                self.camera_previewer_ui.update_images(frame, face_patch, left_eye_patch, right_eye_patch)
+                self.camera_previewer_ui.face_info_dict = face_info.to_dict()
+                return
 
-        :param state: camera state
-        :param timestamp: long, the timestamp when the frame was captured.
-        :param frame: The captured image frame (np.ndarray).
-        :return: None
-        """
-        if state == CameraRunningState.PREVIEWING:
-            # face detection
-            face_info = self.face_alignment.detect(timestamp, frame)
-            face_patch, left_eye_patch, right_eye_patch = None, None, None
-
-            if face_info.status and face_info.can_gaze_estimation:
-                # clip face and eye patches
-                face_patch = clip_patch(frame, face_info.face_rect)
-                left_eye_patch = clip_patch(frame, face_info.left_rect)
-                right_eye_patch = clip_patch(frame, face_info.right_rect)
-
-                # draw left eye rectangle on the image frame
-                x, y, w, h = face_info.left_rect
-                cv2.rectangle(frame, (x, y), (x + w, y + h),
-                              color=(255, 0, 0), thickness=2)
-                # draw right eye rectangle on the image frame
-                x, y, w, h = face_info.right_rect
-                cv2.rectangle(frame, (x, y), (x + w, y + h),
-                              color=(0, 0, 255), thickness=2)
-                # draw eye rectangles on the face patch
-                fx, fy, fw, fh = face_info.face_rect
-                lx, ly, lw, lh = face_info.left_rect
-                relative_left_x = lx - fx
-                relative_left_y = ly - fy
-                cv2.rectangle(face_patch, (relative_left_x, relative_left_y),
-                              (relative_left_x + lw, relative_left_y + lh), color=(255, 0, 0), thickness=2)
-                rx, ry, rw, rh = face_info.right_rect
-                relative_right_x = rx - fx
-                relative_right_y = ry - fy
-                cv2.rectangle(face_patch, (relative_right_x, relative_right_y),
-                              (relative_right_x + rw, relative_right_y + rh), color=(0, 0, 255), thickness=2)
-            # send the image frame to the screen
-            self.camera_previewer_ui.update_images(frame, face_patch, left_eye_patch, right_eye_patch)
-            self.camera_previewer_ui.face_info_dict = face_info.to_dict()
-
-        elif state == CameraRunningState.SAMPLING:
-            # detect face
-            face_info = self.face_alignment.detect(timestamp, frame)
-            # detect gaze
-            gaze_info = self.gaze_estimator.detect(frame, face_info)
-
-            if gaze_info.status and gaze_info.features is not None:
-                calibrated, calibrated_gaze_coordinates = self.calibration.predict(gaze_info.features,
-                                                                                   gaze_info.raw_gaze_coordinates)
-
-                if not calibrated:
-                    Log.e("No calibration model is available, please perform calibration")
-                    raise Exception("No calibration model is available, please perform calibration")
-                else:
-                    # scale to pixel
-                    calibrated_gaze_coordinates = self._calibration_controller.convert_to_pixel(
-                        calibrated_gaze_coordinates)
-                    gaze_info.calibrated_gaze_coordinates = calibrated_gaze_coordinates
-
-                # do filter
-                filtered_gaze_coordinates = self.gaze_filter.filter_values(calibrated_gaze_coordinates)
-                gaze_info.filtered_gaze_coordinates = filtered_gaze_coordinates
-            self.dispatch_face_gaze_info(face_info, gaze_info)
-
-        elif state == CameraRunningState.CALIBRATING:
-            if self._calibration_controller.calibrating:
+            elif state == CameraRunningState.SAMPLING:
+                # detect face & gaze
                 face_info = self.face_alignment.detect(timestamp, frame)
                 gaze_info = self.gaze_estimator.detect(frame, face_info)
-                self._calibration_controller.add_cali_feature(gaze_info=gaze_info, face_info=face_info)
-            elif not self._calibration_controller.cali_model_fitted:
-                features = np.array(self._calibration_controller.feature_vectors)
-                n_point, n_frame, feature_dim = features.shape
-                features = np.reshape(features, (n_point * n_frame, feature_dim))
+        
+                # 只有在真正拿到有效特征并完成滤波后，才更新和 dispatch
+                if (gaze_info.status
+                        and gaze_info.features is not None):
+                    # 校正到屏幕坐标
+                    calibrated, coords = self.calibration.predict(
+                        gaze_info.features,
+                        gaze_info.raw_gaze_coordinates
+                    )
+                    if calibrated:
+                        # 转换为像素并滤波
+                        px = self._calibration_controller.convert_to_pixel(coords)
+                        filt = self.gaze_filter.filter_values(px)
+                        # 赋值到 gaze_info
+                        gaze_info.calibrated_gaze_coordinates = px
+                        gaze_info.filtered_gaze_coordinates = filt
+        
+                        # **仅此时**更新存储并 dispatch
+                        self._gaze_info = gaze_info
+                        self.dispatch_face_gaze_info(face_info, gaze_info)
+    # 其它情况一律跳过，不覆盖旧值
+                return
 
-                labels = np.array(self._calibration_controller.label_vectors)
-                n_point, n_frame, label_dim = labels.shape
-                labels = np.reshape(labels, (n_point * n_frame, label_dim))
-                ids = np.array(self._calibration_controller.feature_ids)
-                n_point, n_frame, ids_dim = ids.shape
-                point_ids = np.reshape(ids, (n_point * n_frame, ids_dim))
+            if state == CameraRunningState.CALIBRATING:
+                if self._calibration_controller.calibrating:
+                    face_info = self.face_alignment.detect(timestamp, frame)
+                    gaze_info = self.gaze_estimator.detect(frame, face_info)
+                    self._calibration_controller.add_cali_feature(face_info=face_info, gaze_info=gaze_info)
+                elif not self._calibration_controller.cali_model_fitted:
+                    feats = np.array(self._calibration_controller.feature_vectors)
+                    n_pt,n_fr,fd = feats.shape
+                    feats = feats.reshape(n_pt*n_fr,fd)
+                    labs = np.array(self._calibration_controller.label_vectors).reshape(-1,2)
+                    ids = np.array(self._calibration_controller.feature_ids).reshape(-1,1)
+                    has_cal, mean_err, preds = self.calibration.calibrate(feats, labs, ids)
+                    self._calibration_controller.set_calibration_results(
+                        has_cal, mean_err, labs, preds)
+                    self._calibration_controller.cali_model_fitted = True
+                return
 
-                has_calibrated, mean_euclidean_error, predictions \
-                    = self.calibration.calibrate(features, labels, point_ids)
+            if state == CameraRunningState.CLOSING:
+                return
 
-                self._calibration_controller.set_calibration_results(has_calibrated, mean_euclidean_error, labels,
-                                                                     predictions)
-                self._calibration_controller.cali_model_fitted = True
-
-        elif state == CameraRunningState.CLOSING:
-            # Do nothing
-            pass
-
+        except Exception as e:
+            logging.error(f"Error in GazeFollower.process_frame: {e}", exc_info=True)
+            return
     # def pixel_to_cm(self, camera_position, coordination_pixel):
     def dispatch_face_gaze_info(self, face_info, gaze_info):
         """

@@ -1,0 +1,6 @@
+09-Jun-25 16:43:36.893 - INFO - WebCam opened
+09-Jun-25 16:43:39.405 - INFO - WebCam closed
+09-Jun-25 16:43:39.506 - INFO - WebCam opened
+09-Jun-25 16:44:15.963 - INFO - calibrating shutdowns
+09-Jun-25 16:44:26.919 - INFO - WebCam closed
+09-Jun-25 16:44:26.932 - INFO - WebCam opened

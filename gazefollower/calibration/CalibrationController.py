@@ -36,6 +36,7 @@ class CalibrationController:
 
         self._prepare_time = 1.5  # time for waiting subject look at the dot
         self._wait_time = 0.5
+        # self._n_frame_need_collect = 45
         self._n_frame_need_collect = 45
 
         self.feature_ids = []
@@ -53,8 +54,13 @@ class CalibrationController:
             position_idx = self._nine_cali_idx[self._current_index]
         elif self.cali_mode == CalibrationMode.FIVE_POINT:
             position_idx = self._five_cali_idx[self._current_index]
-        else:
+        elif self.cali_mode == CalibrationMode.FIVE_POINT:
+            position_idx = self._five_cali_idx[self._current_index]
+        elif self.cali_mode == CalibrationMode.THIRTEEN_POINT:
             position_idx = self._thirteen_cali_idx[self._current_index]
+        else:
+            # position_idx = self._thirteen_cali_idx[self._current_index]
+            position_idx = self._five_cali_idx[self._current_index]
 
         percent_point = self.normalized_point[position_idx - 1]
         self.x = percent_point[0]
@@ -99,7 +105,8 @@ class CalibrationController:
                     else:
                         added_pos = [self.x, self.y]
                     self.label_vectors[self._current_index - 1].append(added_pos)
-
+#here
+                #self._n_frame_added += 1
                 self._n_frame_added += 1
                 if self._n_frame_added == self._n_frame_need_collect:
                     self._feature_full_time = time.time()

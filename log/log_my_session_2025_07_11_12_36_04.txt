@@ -1,0 +1,2 @@
+11-Jul-25 12:36:04.838 - INFO - WebCam opened
+11-Jul-25 12:36:04.880 - ERROR - Failed to open webcam camera
